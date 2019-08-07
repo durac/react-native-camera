@@ -226,6 +226,7 @@ public class CameraView extends FrameLayout {
         state.exposure = getExposureCompensation();
         state.focusDepth = getFocusDepth();
         state.zoom = getZoom();
+        state.brightness = getBrightness();
         state.whiteBalance = getWhiteBalance();
         state.scanning = getScanning();
         state.pictureSize = getPictureSize();
@@ -247,6 +248,7 @@ public class CameraView extends FrameLayout {
         setExposureCompensation(ss.exposure);
         setFocusDepth(ss.focusDepth);
         setZoom(ss.zoom);
+        setBrightness(ss.brightness);
         setWhiteBalance(ss.whiteBalance);
         setScanning(ss.scanning);
         setPictureSize(ss.pictureSize);
@@ -520,6 +522,23 @@ public class CameraView extends FrameLayout {
       return mImpl.getZoom();
     }
 
+    /**
+     * Sets desired brightness level.
+     * 
+     * @param brightness The desired brightness level. 
+     */
+    public void setBrightness(int brightness){
+        mImpl.setBrightness(brightness);
+    }
+
+    /**
+     * @return The current brightness level.
+     */
+    public int getBrightness(){
+        return mImpl.getBrightness();
+    }
+
+
     public void setWhiteBalance(int whiteBalance) {
       mImpl.setWhiteBalance(whiteBalance);
     }
@@ -659,6 +678,8 @@ public class CameraView extends FrameLayout {
 
         float zoom;
 
+        int brightness;
+
         int whiteBalance;
 
         boolean scanning;
@@ -675,6 +696,7 @@ public class CameraView extends FrameLayout {
             exposure = source.readInt();
             focusDepth = source.readFloat();
             zoom = source.readFloat();
+            brightness = source.readInt();
             whiteBalance = source.readInt();
             scanning = source.readByte() != 0;
             pictureSize = source.readParcelable(loader);
@@ -694,6 +716,7 @@ public class CameraView extends FrameLayout {
             out.writeInt(exposure);
             out.writeFloat(focusDepth);
             out.writeFloat(zoom);
+            out.writeInt(brightness);
             out.writeInt(whiteBalance);
             out.writeByte((byte) (scanning ? 1 : 0));
             out.writeParcelable(pictureSize, flags);

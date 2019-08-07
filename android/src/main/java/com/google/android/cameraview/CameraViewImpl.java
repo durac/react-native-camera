@@ -103,6 +103,10 @@ abstract class CameraViewImpl {
 
     abstract float getZoom();
 
+    abstract int getBrightness();
+
+    abstract void setBrightness(int brightness);
+
     abstract void setWhiteBalance(int whiteBalance);
 
     abstract int getWhiteBalance();

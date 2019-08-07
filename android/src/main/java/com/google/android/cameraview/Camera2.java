@@ -77,6 +77,16 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
      */
     private static final int MAX_PREVIEW_HEIGHT = 1080;
 
+    /**
+     * Max compensation range for brightness
+     */
+    private static final int MAX_BRIGHTNESS_COMPENSATION_RANGE = 100;
+
+    /**
+     * Min compensation range for brightness
+     */
+    private static final int MIN_BRIGHTNESS_COMPENSATION_RANGE = 0;
+
     private static final int FOCUS_AREA_SIZE_DEFAULT = 300;
 
     private static final int FOCUS_METERING_AREA_WEIGHT_DEFAULT = 1000;
@@ -126,6 +136,7 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
             updateFocusDepth();
             updateWhiteBalance();
             updateZoom();
+            updateBrightness();
             try {
                 mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(),
                         mCaptureCallback, null);
@@ -237,6 +248,8 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     private boolean mAutoFocus;
 
     private int mFlash;
+
+    private int mBrightness;
 
     private int mExposure;
 
@@ -588,6 +601,28 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
     @Override
     float getZoom() {
         return mZoom;
+    }
+
+        @Override
+    void setBrightness(int brightness) {
+        if(mBrightness == brightness){
+            return;
+        }
+        int saved = mBrightness;
+        mBrightness = brightness;
+        if(mCaptureSession != null){
+            updateBrightness();
+            try {
+                mCaptureSession.setRepeatingRequest(mPreviewRequestBuilder.build(), mCaptureCallback, null);
+            } catch(CameraAccessException e) {
+                mBrightness = saved; //Reverts back
+            }
+        }
+    }
+
+    @Override
+    int getBrightness(){
+        return mBrightness;
     }
 
     @Override
@@ -995,6 +1030,11 @@ class Camera2 extends CameraViewImpl implements MediaRecorder.OnInfoListener, Me
                 mPreviewRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, mInitialCropRegion);
             }
         }
+    }
+
+    void updateBrightness() {
+        int newBrightness = (int) (MIN_BRIGHTNESS_COMPENSATION_RANGE + (MAX_BRIGHTNESS_COMPENSATION_RANGE - MIN_BRIGHTNESS_COMPENSATION_RANGE) * (mBrightness / 100f));
+        mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, newBrightness);
     }
 
     /**

@@ -110,6 +110,11 @@ public class CameraViewManager extends ViewGroupManager<RNCameraView> {
     view.setZoom(zoom);
   }
 
+  @ReactProp(name = "brightness")
+  public void setBrightness(RNCameraView view, int brightness){
+    view.setBrightness(brightness);
+  }
+
   @ReactProp(name = "whiteBalance")
   public void setWhiteBalance(RNCameraView view, int whiteBalance) {
     view.setWhiteBalance(whiteBalance);
